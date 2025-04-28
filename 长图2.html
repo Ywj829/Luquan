@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轿子雪山打卡</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f0f0f0;
+            overflow-x: hidden; /* 隐藏水平滚动 */
+        }
+
+        /* 外层滚动容器 */
+        .scroll-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto; /* 启用垂直滚动 */
+            -webkit-overflow-scrolling: touch; /* 移动端顺滑滚动 */
+            cursor: grab; /* 拖动时显示手形图标 */
+        }
+
+        /* 图片容器 */
+        .image-container {
+            width: 100%;
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 实际图片 */
+        .panorama-image {
+            width: 100%;
+            height: auto;
+            max-width: 825px; /* 图片原始宽度 */
+            object-fit: contain;
+        }
+
+        /* 返回按钮样式 */
+        .return-btn {
+            position: absolute;
+            right: 33%;
+            bottom: 20px;
+            width: 120px;
+            height: 120px;
+            background-color: transparent;
+            /*background-color: rgba(255, 255, 255, 1);/*测试用*/
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .return-btn:hover {
+            transform: scale(1.1);
+            background-color: transform;
+        }
+
+        /* 修改后的图片样式 */
+        .panorama-image {
+            width: 60%; /* 调整为更小的宽度比例 */
+            max-width: 600px; /* 减小最大宽度 */
+            min-width: 300px; /* 添加最小宽度限制 */
+            height: auto;
+            object-fit: contain;
+            margin: 20px auto; /* 添加上下边距 */
+            display: block; /* 改为块级元素 */
+            transition: width 0.3s ease; /* 添加过渡动画 */
+        }
+
+        /* 新增响应式布局 */
+        @media screen and (max-width: 768px) {
+            .panorama-image {
+                width: 90%; /* 移动端显示更宽 */
+                max-width: 100%;
+            }
+        }
+
+        @media screen and (min-width: 1200px) {
+            .panorama-image {
+                width: 50%; /* 大屏幕显示更窄 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-container" id="scrollContainer">
+        <div class="image-container">
+            <img src="长图2.jpg" class="panorama-image" alt="轿子雪山全景">
+        </div>
+    </div>
+    <!-- 返回按钮 -->
+    <div class="return-btn" onclick="goBack()"></div>
+
+    <script>
+        // 导航功能
+        function navigate(page) {
+            const pages = {
+                'shanghua': 'clock_2.html',
+            };
+            if (pages[page]) window.location.href = pages[page];
+        }
+
+        // 返回功能
+        function goBack() {
+            window.location.href = 'clock_2.html';
+        }
+
+        // 自动调整布局
+        function adjustLayout() {
+            const img = document.querySelector('.panorama-image');
+            const container = document.querySelector('.image-container');
+            
+            // 确保图片水平居中
+            if (img.naturalWidth) {
+                const viewportWidth = window.innerWidth;
+                if (viewportWidth > img.naturalWidth) {
+                    container.style.justifyContent = 'center';
+                } else {
+                    container.style.justifyContent = 'flex-start';
+                }
+            }
+        }
+
+        // 防抖处理
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(adjustLayout, 100);
+        });
+
+        // 图片加载完成后初始化
+        window.addEventListener('load', () => {
+            adjustLayout();
+            // 自动滚动到顶部
+            document.querySelector('.scroll-container').scrollTo(0, 0);
+        });
+
+        // 鼠标点击上滑后页面自动下滑
+        let isClicking = false;
+        let clickStartY;
+
+        document.querySelector('.scroll-container').addEventListener('mousedown', (e) => {
+            isClicking = true;
+            clickStartY = e.clientY;
+        });
+
+        document.querySelector('.scroll-container').addEventListener('mouseup', (e) => {
+            if (!isClicking) return;
+            isClicking = false;
+            const clickEndY = e.clientY;
+            const scrollDistance = clickStartY - clickEndY; // 计算滑动距离
+            if (scrollDistance > 0) {
+                // 如果向上滑动，则页面自动下滑
+                const scrollContainer = document.querySelector('.scroll-container');
+                scrollContainer.scrollTop += scrollDistance * 2; // 下滑距离可以根据需要调整
+            }
+        });
+
+        // 鼠标拖动滚动效果（保留原有功能）
+        let isMouseDown = false;
+        let startY;
+
+        document.querySelector('.scroll-container').addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            startY = e.clientY;
+            document.querySelector('.scroll-container').style.cursor = 'grabbing';
+        });
+
+        document.querySelector('.scroll-container').addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            const scrollContainer = document.querySelector('.scroll-container');
+            const diffY = startY - e.clientY;
+            scrollContainer.scrollTop += diffY;
+            startY = e.clientY;
+        });
+
+        document.querySelector('.scroll-container').addEventListener('mouseup', () => {
+            isMouseDown = false;
+            document.querySelector('.scroll-container').style.cursor = 'grab';
+        });
+
+        document.querySelector('.scroll-container').addEventListener('mouseleave', () => {
+            isMouseDown = false;
+            document.querySelector('.scroll-container').style.cursor = 'grab';
+        });
+    </script>
+</body>
+</html>
