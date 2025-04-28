@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探索</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-image: url("探索_上滑页面.png");
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: contain;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 新增滑动提示动画 */
+        .swipe-tips {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 14px;
+            animation: swipeUp 1.5s infinite;
+            opacity: 0.8;
+            display: none; /* 默认隐藏 */
+        }
+
+        @keyframes swipeUp {
+            0%, 100% { transform: translateY(0); opacity: 0.8; }
+            50% { transform: translateY(-20px); opacity: 0.4; }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 向上滑动 -->
+    <div class="swipe-tips">向上滑动跳转</div>
+
+    <script>
+        // 上滑检测
+        let startY = 0;
+        let endY = 0;
+        const swipeThreshold = 50; // 设置上滑跳转的阈值，单位：像素
+
+        // 监听触摸事件
+        window.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY; // 获取触摸起始点
+        });
+
+        window.addEventListener('touchend', (e) => {
+            endY = e.changedTouches[0].clientY; // 获取触摸结束点
+            handleSwipe();
+        });
+
+        // 监听鼠标事件（桌面设备）
+        window.addEventListener('mousedown', (e) => {
+            startY = e.clientY; // 获取鼠标按下时的Y坐标
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            endY = e.clientY; // 获取鼠标抬起时的Y坐标
+            handleSwipe();
+        });
+
+        // 判断是否是上滑动作
+        function handleSwipe() {
+            if (startY - endY > swipeThreshold) {
+                // 滑动距离超过阈值，执行跳转
+                window.location.href = '轿子雪山游戏_页面1.html'; // 设置跳转的目标页面
+            }
+        }
+    </script>
+</body>
+</html>
