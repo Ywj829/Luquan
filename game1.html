@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('背景1.png') no-repeat center center fixed;
+            background-size: contain;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /*边框*/
+        #game-wrapper {
+            width: 80%;
+            max-width: 340px;
+            height: 80vh;
+            max-height: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover; /* 背景填充 */
+            background-position: center; /* 背景居中 */
+            border: 5px solid rgba(63, 176, 237, 1);
+            border-radius: 15px;
+            box-shadow: none; /* 去除阴影效果 */
+            position: relative;
+        }
+
+        /* 游戏内容容器 */
+        #game-container {
+            position: relative;
+            width: 100%;  /* 使其适应整个游戏框 */
+            height: 100%; /* 使其适应整个游戏框 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 游戏画布 */
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background-color: transparent;
+            background: transparent; /* 确保画布背景是透明的 */
+            border: none; /* 确保没有边框影响 */
+        }
+
+        /* 新增分数显示容器样式 */
+        #score-container {
+            position: absolute;
+            top: -7.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        /* 分数图标样式 */
+        #score-image {
+            position:absolute;
+            top: -8%;/*位置*/
+            left: 5%;
+            width: 20px;
+            height: 20px;
+            background: url('方块雪花.png') no-repeat center center;
+            background-size: contain;
+        }
+        /* 分数数字样式 */
+        #score-text {
+            color: white;
+            font-size: 22px;
+            font-family: Electrolize;
+            min-width: 60px;
+            text-align: center;
+            position:relative;
+            left:15px;
+            top:-5px;
+        }
+
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            z-index: 5;
+            border-radius: 10px;
+        }
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: rgba(63, 176, 237, 1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-button:hover {
+            background-color: rgba(63, 176, 237, 1)
+        }
+
+        /* 暂停按钮样式 */
+        #pause-button {
+            position: absolute;
+            top: -8.5%;/*位置*/
+            right: -3%;
+            width: 20%;
+            height: 4%;/*大小*/
+            z-index: 10;
+            cursor: pointer;
+            border: none;
+            background: url('暂停按钮.png') no-repeat center center;
+            background-size: contain;
+            overflow: hidden;
+            opacity: 1; /*不透明*/
+        }
+        /* 暂停界面样式 */
+        #pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none; /* 默认隐藏 */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            z-index: 15;
+            border-radius: 10px;
+        }
+        /*暂停后继续*/
+        #resume-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: rgba(63, 176, 237, 1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /*返回按钮*/
+        #back-area {
+            position: absolute;
+            top: -8%;/*位置*/
+            right: 85%;
+            width: 20%;/*根据图片调整*/
+            height: 4%;
+            z-index: 10;
+            cursor: pointer;
+            border: none;
+            background: url('返回按钮.png') no-repeat center center;
+            background-size: contain;
+            overflow: hidden;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-wrapper">
+        <div id="game-container">
+            <!-- 分数显示容器 -->
+            <div id="score-container">
+                <div id="score-image"></div>
+                <div id="score-text">0</div>
+            </div>
+            <!-- 返回区域 -->
+            <div id="back-area" title="返回"></div>
+            <!-- 暂停按钮 -->
+            <button id="pause-button" title="暂停"></button>
+            <canvas id="game-canvas"></canvas>
+            <!-- 暂停界面 -->
+            <div id="pause-screen">
+                <h1>游戏已暂停</h1>
+                <button id="resume-button">继续游戏</button>
+            </div>
+            <div id="start-screen">
+                <h1>钢琴块小游戏</h1>
+                <p>点击下落的方块得分，长方块需要按住更长时间</p>
+                <button id="start-button">开始游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 在body末尾添加音频元素 -->
+    <audio id="bgm" src="11.MP3"></audio>
+
+    <script>
+        // 游戏基础设置
+        const BASE_WIDTH = 400;
+        const BASE_HEIGHT = 600;
+        
+        // 获取DOM元素
+        const gameContainer = document.getElementById('game-container');
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-text');
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const backArea = document.getElementById('back-area');
+        // 暂停相关元素
+        const pauseButton = document.getElementById('pause-button');
+        const pauseScreen = document.getElementById('pause-screen');
+        const resumeButton = document.getElementById('resume-button');
+        //元素图片
+        const starImage = new Image();
+        starImage.src = '方块星星.png';
+        const snowflakeImage = new Image();
+        snowflakeImage.src = '方块雪花.png';
+        //音频元素
+        const bgm = document.getElementById('bgm');
+
+        // 游戏状态
+        let score = 0;
+        let gameRunning = false;
+        let animationId;
+        let blocks = [];
+        let lanes = [];
+        let laneWidth;
+        let blockSpeed = 1.5;
+        let spawnRate = 60;
+        let frameCount = 0;
+        let heldBlocks = {};
+        let scaleFactor = 1;
+        let laneGap = 5; // 轨道之间的间隔
+        let missedCount = 0; // 初始化未击中计数
+        let musicPlayed = false;
+
+        // 颜色定义
+        const shortBlockColor = '#FAFF62';
+        const longBlockColor = '#3FB0ED';
+        const laneColors = [
+            'rgba(0,0,0,0)', // 完全透明
+            'rgba(0,0,0,0)', 
+            'rgba(0,0,0,0)',
+            'rgba(0,0,0,0)'
+         ];
+
+        //初始化轨道
+        function initLanes() {
+            lanes = [];
+            const totalGapWidth = laneGap * 3; // 3个间隔
+            laneWidth = (canvas.width - totalGapWidth) / 4;
+            
+            for (let i = 0; i < 4; i++) {
+                lanes.push({
+                    x: i * (laneWidth + laneGap),
+                    width: laneWidth,
+                    // 卡片参数
+                    cardWidth: laneWidth * 0.75,
+                    cardXOffset: (laneWidth - laneWidth * 0.75) / 2  // 计算卡片居中偏移量
+                });
+            }
+        }
+        //轨道渲染成白色
+        function drawLanes() {
+            lanes.forEach(lane => {
+                // 先绘制整个轨道为全透明
+                ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+                ctx.fillRect(lane.x, 0, lane.width, canvas.height);
+                
+                // 绘制细黑色线条：左侧
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.lineWidth = 1;  // 设置为1px宽度
+                ctx.beginPath();
+                ctx.moveTo(lane.x + lane.cardXOffset, 0);  // 左侧线条起始位置
+                ctx.lineTo(lane.x + lane.cardXOffset, canvas.height);  // 左侧线条结束位置
+                ctx.stroke();
+                
+                // 绘制细黑色线条：右侧
+                ctx.beginPath();
+                ctx.moveTo(lane.x + lane.cardXOffset + lane.cardWidth, 0);  // 右侧线条起始位置
+                ctx.lineTo(lane.x + lane.cardXOffset + lane.cardWidth, canvas.height);  // 右侧线条结束位置
+                ctx.stroke();
+
+                // 再绘制卡片区域为白色半透明
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(
+                    lane.x + lane.cardXOffset,  // 卡片起始X坐标
+                    0,                          // 从顶部开始
+                    lane.cardWidth,             // 卡片宽度
+                    canvas.height               // 贯穿整个高度
+                );
+            });
+        }
+
+        // 方块类
+        class Block {
+            constructor(laneIndex, isLong = false) {
+                /*轨道设置*/
+                this.laneIndex = laneIndex;
+                // 获取当前轨道对象
+                const currentLane = lanes[laneIndex];
+                // 计算方块居中位置 = 轨道起始x + (轨道宽度 - 方块宽度)/2
+                this.x = currentLane.x + (currentLane.width - currentLane.width*0.75)/2; 
+                
+                this.y = -50;//方块初始位置
+                this.width = currentLane.width*0.75; // 方块宽是轨道宽度的80%
+                this.height = isLong ? 200 : 100;//方块长
+
+                this.color = isLong ? `rgba(63, 176, 237, 0.7)` : `rgba(250, 255, 98)`;
+                this.isLong = isLong;
+                this.holdTime = 0;
+                this.holdRequired = isLong ? 30 : 0;
+                this.holdProgress = 0;
+                this.completed = false;
+                this.id = Date.now() + Math.random().toString(36).substr(2, 9);
+                this.cornerRadius = 8;//方块圆角
+                this.speed = 1.5;  // 下落速度
+            }
+
+            update() {
+                if(gamePaused) return;// 如果游戏暂停，不更新方块位置
+
+                this.y += this.speed;
+                
+                if (this.id in heldBlocks) {
+                    this.holdTime++;
+                    this.holdProgress = Math.min(1, this.holdTime / this.holdRequired);
+                    
+                    if (this.holdTime >= this.holdRequired && !this.completed) {
+                        this.completed = true;
+                        score += 2;
+                        updateScore();
+                        const index = blocks.findIndex(b => b.id === this.id);
+                        if (index !== -1) {
+                            blocks.splice(index, 1);
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                ctx.save();
+                drawRoundRect(ctx, this.x, this.y, this.width, this.height, this.cornerRadius);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+
+                //替换为图片
+                if (this.isLong) {
+                    this.SnowflakeImage();
+                } else {
+                    this.StarImage();
+                }
+
+                if (this.isLong && this.id in heldBlocks && !this.completed) {
+                    ctx.fillStyle = 'white';
+                    const progressHeight = 4;
+                    const progressY = this.y + progressHeight;
+                    drawRoundRect(ctx, this.x, progressY, this.width * this.holdProgress, progressHeight, progressHeight/2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+            StarImage(){
+                if (!starImage.complete) return; // 确保图片已加载
+                const imgSize = Math.min(this.width, this.height) * 0.4; // 图片大小为方块的40%
+                const x = this.x + (this.width - imgSize)/2;
+                const y = this.y + (this.height - imgSize)/2;
+                ctx.drawImage(starImage, x, y, imgSize, imgSize);
+            }
+            SnowflakeImage(){
+                if (!snowflakeImage.complete) return;
+                const imgWidth = this.width * 0.6;
+                const imgHeight = this.height * 0.18;
+                const x = this.x + (this.width - imgWidth)/2;
+                const y = this.y + this.height - imgHeight - 15;//调整雪花在卡片中的位置
+                ctx.drawImage(snowflakeImage, x, y, imgWidth, imgHeight);
+            }
+
+            isClicked(x, y) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = x - rect.left;
+                const canvasY = y - rect.top;
+                const scaledX = canvasX / (rect.width / canvas.width);
+                const scaledY = canvasY / (rect.height / canvas.height);
+                
+                return scaledX >= this.x && scaledX <= this.x + this.width && 
+                       scaledY >= this.y && scaledY <= this.y + this.height;
+            }
+
+            isMissed() {
+                return this.y > canvas.height;
+            }
+        }
+
+        function drawRoundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function adjustGameSize() {
+            const container = document.getElementById('game-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            if (gameRunning) {
+                initLanes();
+            }
+        }
+
+        /*分数更新*/
+        function updateScore() {
+            scoreDisplay.textContent = `${score}`;
+        }
+
+        function spawnRandomBlock() {
+            // 如果游戏暂停，不生成新方块
+            if(gamePaused) return;
+
+            const isLong = Math.random() < 0.3;
+            let validLanes = [0, 1, 2, 3];
+            let attempts = 0;
+            let block = null;
+
+            while (validLanes.length > 0 && attempts < 10) {
+                const laneIndex = validLanes[Math.floor(Math.random() * validLanes.length)];
+                const newBlock = new Block(laneIndex, isLong);
+                
+                // 设置统一的下落速度
+                newBlock.speed = 1.5;
+
+                let canSpawn = true;
+                for (const existing of blocks) {
+                    if (existing.laneIndex === laneIndex) {
+                        const minGap = 100;
+                        const existingBottom = existing.y + existing.height;
+                        if (newBlock.y < existingBottom + minGap) {
+                            canSpawn = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canSpawn) {
+                    block = newBlock;
+                    break;
+                } else {
+                    validLanes = validLanes.filter(l => l !== laneIndex);
+                    attempts++;
+                }
+            }
+
+            if (block) blocks.push(block);
+        }
+
+        function drawBackground() {
+            // 完全清空画布为透明
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function gameLoop() {
+            // 如果游戏暂停，直接返回不继续循环
+            if(gamePaused||!gameRunning) return;
+
+            drawBackground();
+            drawLanes();  //轨道绘制
+            
+            frameCount++;
+            if (frameCount % spawnRate === 0) {
+                spawnRandomBlock();
+            }
+            
+            for (let i = blocks.length - 1; i >= 0; i--) {
+                const block = blocks[i];
+                block.update();
+                block.draw();
+                
+                if (block.isMissed() && !block.completed && !(block.id in heldBlocks)) {
+                    blocks.splice(i, 1);
+                    missedCount++;
+                    
+                    if (!block.isLong) score = Math.max(0, score - 1);
+                    
+                    if (missedCount >= 3) {
+                        endGame();
+                        return;
+                    }
+                }
+            }
+            
+            updateScore();
+            // 在最后请求下一帧
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function startGame() {
+            score = 0;
+            blocks = [];
+            heldBlocks = {};
+            missedCount = 0;
+            blockSpeed = 1.5;
+            spawnRate = 60;
+            frameCount = 0;
+            updateScore();
+            startScreen.style.display = 'none';
+            pauseScreen.style.display = 'none'; // 确保暂停界面隐藏
+            gameRunning = true
+            gamePaused = false; // 确保游戏不是暂停状态;
+
+            // 开始播放音乐
+            bgm.play().catch(error => {
+                console.log('需要用户交互后才能播放音乐');
+                startButton.textContent = '点击开始游戏并播放音乐';
+            });
+            // 添加音乐结束监听
+            bgm.onended = checkGameResult;
+
+            initLanes();
+            animationId = requestAnimationFrame(gameLoop); // 确保通过RAF启动
+        }
+
+        // 检查游戏结果函数
+        function checkGameResult() {
+            if(score >= 100) {
+                window.location.href = "完成1.html";
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            cancelAnimationFrame(animationId);
+            startScreen.style.display = 'flex';
+            startScreen.querySelector('h1').textContent = '游戏结束';
+            startScreen.querySelector('p').innerHTML = `连续三次未击中方块！<br>最终分数: ${score}`;
+            startButton.textContent = '再玩一次';
+            // 停止音乐
+            bgm.pause();
+            bgm.currentTime = 0;
+        }
+
+        //暂停游戏
+        function pauseGame() {
+            if(!gameRunning) return;
+            
+            gamePaused = true;
+            pauseScreen.style.display = 'flex'; // 显示暂停界面
+            cancelAnimationFrame(animationId); // 关键：停止当前循环
+            bgm.pause();
+        }
+
+        //继续游戏
+        function resumeGame() {
+            if(!gameRunning) return;
+            
+            gamePaused = false;
+            pauseScreen.style.display = 'none'; // 隐藏暂停界面
+            bgm.play();
+            animationId = requestAnimationFrame(gameLoop); // 重新启动循环
+        }
+
+        // 事件监听
+        startButton.addEventListener('click', startGame);
+        backArea.addEventListener('click', () => {
+            window.location.href = "index.html";
+        });
+
+        // 暂停按钮事件
+        pauseButton.addEventListener('click', () => {
+            if(gamePaused) {
+                resumeGame();
+            } else {
+                pauseGame();
+            }
+        });
+        // 继续按钮事件
+        resumeButton.addEventListener('click', resumeGame);
+
+        function handleBlockClick(x, y) {
+            // 如果游戏暂停，不处理点击事件
+            if (!gameRunning || gamePaused) return;
+            
+            const backRect = backArea.getBoundingClientRect();
+            if (x >= backRect.left && x <= backRect.right && 
+                y >= backRect.top && y <= backRect.bottom) {
+                return;
+            }
+            
+            // 检查是否点击了暂停按钮
+            const pauseRect = pauseButton.getBoundingClientRect();
+            if (x >= pauseRect.left && x <= pauseRect.right && 
+                y >= pauseRect.top && y <= pauseRect.bottom) {
+                return;
+            }
+            
+            for (let i = blocks.length - 1; i >= 0; i--) {
+                const block = blocks[i];
+                if (block.isClicked(x, y)) {
+                    if (block.isLong) {
+                        missedCount = 0;
+                        heldBlocks[block.id] = true;
+                    } else {
+                        score += 1;
+                        updateScore();
+                        blocks.splice(i, 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        function handleBlockRelease() {
+            if (!gameRunning || gamePaused) return;
+            
+            for (let i = blocks.length - 1; i >= 0; i--) {
+                const block = blocks[i];
+                if (block.id in heldBlocks && !block.completed) {
+                    delete heldBlocks[block.id];
+                    
+                    if (block.isLong) {
+                        score = Math.max(0, score - 1);
+                        updateScore();
+                    }
+                }
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            handleBlockClick(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            handleBlockRelease();
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleBlockClick(e.touches[0].clientX, e.touches[0].clientY);
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handleBlockRelease();
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            adjustGameSize();
+            startButton.disabled = false;
+        });
+
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                adjustGameSize();
+            }, 100);
+        });
+        let resizeTimer;
+    </script>
+</body>
+</html>

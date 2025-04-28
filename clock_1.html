@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轿子雪山打卡</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-image: url("clock_1.png");
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: contain;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 导航按钮容器 */
+        .nav-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* 基础按钮样式 */
+        .nav-btn {
+            position: absolute;
+            /*background-color: rgba(255,0,0,0.3); /* 调试用红色背景 */
+            /*border: 1px solid red; /* 调试用边框 */
+            cursor: pointer;
+            pointer-events: auto;
+            transform: translate(-50%, -50%);
+        }
+
+        .shanghua-btn {
+            width: 4px;
+            height: 4px;
+        }
+        .return-btn {
+            width: 4px;
+            height: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 按钮 -->
+    <div class="nav-container">
+        <div class="nav-btn shanghua-btn" onclick="navigate('shanghua')"></div>
+        <div class="nav-btn return-btn" onclick="navigate('return')"></div>
+    </div>
+
+    <script>
+        // 导航功能
+        function navigate(page) {
+            const pages = {
+                'shanghua': '长图1.html',
+                'return': '禄圈.html'
+            };
+            if (pages[page]) window.location.href = pages[page];
+        }
+
+        // 动态调整按钮位置和大小
+        function adjustNavigation() {
+            const img = new Image();
+            img.src = "clock_1.png";
+
+            img.onload = function() {
+                const imgWidth = img.width;
+                const imgHeight = img.height;
+                const buttons = document.querySelectorAll('.nav-btn');
+                
+                // 获取当前图片显示尺寸
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const imgRatio = imgWidth / imgHeight;
+                const windowRatio = windowWidth / windowHeight;
+                
+                let displayWidth, displayHeight, offsetX;
+                
+                if (windowRatio > imgRatio) {
+                    // 窗口更宽，图片高度撑满
+                    displayHeight = windowHeight;
+                    displayWidth = displayHeight * imgRatio;
+                    offsetX = (windowWidth - displayWidth) / 2;
+                } else {
+                    // 窗口更高，图片宽度撑满
+                    displayWidth = windowWidth;
+                    displayHeight = displayWidth / imgRatio;
+                    offsetX = 0;
+                }
+                
+                // 计算缩放比例
+                const scale = displayWidth / imgWidth;
+                
+                // 按钮位置配置
+                const buttonPositions = [
+                    { class: 'shanghua-btn', x: imgWidth*0.888, y: imgHeight*0.893 }, 
+                    { class: 'return-btn', x: imgWidth*0.080, y: imgHeight*0.033 }
+                ];
+                
+                // 调整每个按钮
+                buttonPositions.forEach(pos => {
+                    const btn = document.querySelector(`.${pos.class}`);
+                    if (btn) {
+                        btn.style.left = `${offsetX + pos.x * scale}px`;
+                        btn.style.top = `${pos.y * scale}px`;
+                        
+                    btn.style.width = `${200 * scale}px`;
+                    btn.style.height = `${200 * scale}px`;
+                    }
+                });
+            };
+        }
+
+        // 防抖处理
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(adjustNavigation, 100);
+        });
+
+        window.addEventListener('load', adjustNavigation);
+    </script>
+</body>
+</html>
