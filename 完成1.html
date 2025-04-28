@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏1</title>
+    <style>
+        @font-face {
+            font-family: 'MaoKenWangFengYaSong';
+            src: url('fonts/MaoKenWangFengYaSong.woff2') format('woff2'),
+                 url('fonts/MaoKenWangFengYaSong.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-image: url("完成1.png");
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: contain;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .white-box {
+            position: absolute;
+            left: 50%;
+            top: 77%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            height: 75px;
+            background-image: url("白色框.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .logo {
+            position: absolute;
+            left: 68px;
+            top: 60%;
+            transform: translateY(-50%);
+            width: 65px;
+            height: 65px;
+            background-image: url("logo.png");
+            background-size: cover;
+            transition: left 0.3s ease;
+            touch-action: none; /* 防止触摸默认行为 */
+        }
+
+        .start-text {
+            position: absolute;
+            right: 95px;
+            top: 48%;
+            transform: translateY(-50%);
+            color: rgba(108, 117, 125, 0.64);
+            font-size: 18px;
+            font-family: 'MaoKenWangFengYaSong', sans-serif; /* 添加备用字体 */
+            transition: opacity 0.3s ease;
+        }
+
+        /* 底部上滑区域 */
+        .swipe-up-area {
+            position: fixed;
+            bottom:5px;
+            left: 25%;
+            width: 50%;
+            height: 140px;
+            /*background: rgba(239, 25, 25, 0.845); /* 调试时可暂时可见 */
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="white-box">
+        <div class="logo" id="draggable-logo"></div>
+        <div class="start-text">滑 动 查 看 详 情</div>
+    </div>
+    <div class="swipe-up-area"></div>
+
+    <script>
+        const logo = document.getElementById('draggable-logo');
+        const startText = document.querySelector('.start-text');
+        const whiteBox = document.querySelector('.white-box');
+        let startX = 0;
+        let isDragging = false;
+        const maxSwipe = whiteBox.offsetWidth - 140; // 最大滑动距离
+
+        // 新增底部上滑逻辑
+        const swipeUpArea = document.querySelector('.swipe-up-area');
+        let startY = 0;
+        const swipeThreshold = 50; // 滑动阈值
+
+        /*右滑*/
+        // 触摸事件
+        logo.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        logo.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const currentX = e.touches[0].clientX;
+            const deltaX = currentX - startX;
+            const newLeft = Math.min(Math.max(30, deltaX), maxSwipe);
+            
+            logo.style.left = `${newLeft}px`;
+            startText.style.opacity = 1 - (newLeft / maxSwipe);
+        });
+
+        logo.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const finalLeft = parseInt(logo.style.left);
+            if (finalLeft >= maxSwipe - 20) {
+                window.location.href = '介绍1.html';
+            } else {
+                logo.style.left = '30px';
+                startText.style.opacity = 1;
+            }
+        });
+
+        // 鼠标事件
+        logo.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX;
+            isDragging = true;
+            logo.style.transition = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const currentX = e.clientX;
+            const deltaX = currentX - startX;
+            const newLeft = Math.min(Math.max(30, 30 + deltaX), maxSwipe);
+            
+            logo.style.left = `${newLeft}px`;
+            startText.style.opacity = 1 - (newLeft / maxSwipe);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            logo.style.transition = 'left 0.3s ease';
+            
+            const finalLeft = parseInt(logo.style.left);
+            if (finalLeft >= maxSwipe - 20) {
+                window.location.href = '介绍1.html';/*实现跳转*/
+            } else {
+                logo.style.left = '30px';
+                startText.style.opacity = 1;
+            }
+        });
+
+        /*上滑*/
+        // 触摸事件
+        swipeUpArea.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+
+        swipeUpArea.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].clientY;
+            if (startY - currentY > swipeThreshold) { // 上滑判断
+                window.location.href = '峡谷游戏_页面1.html';
+            }
+        });
+
+        // 鼠标事件
+        swipeUpArea.addEventListener('mousedown', (e) => {
+            startY = e.clientY;
+        });
+
+        swipeUpArea.addEventListener('mousemove', (e) => {
+            if (e.buttons !== 1) return; // 确保左键按下
+            const currentY = e.clientY;
+            if (startY - currentY > swipeThreshold) {
+                window.location.href = '峡谷游戏_页面1.html';
+            }
+        });
+    </script>
+</body>
+</html>
