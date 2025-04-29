@@ -68,16 +68,16 @@
             box-sizing: border-box;
 
             /* 字体增强 */
-            font-size: clamp(24px, 4vw, 48px); /* 调整字体大小 */
+            font-size: clamp(24px, 4vw, 45px); /* 调整字体大小 */
 
             /* 多层文字效果 */
             color: #FFF;
             text-shadow: 
-                0 0 clamp(2px, 0.5vw, 4px) #53AD78, /* 调整阴影大小 */
+                0 0 clamp(0.5px, 0.5vw, 1px) #53AD78, /* 调整阴影大小 */
                 clamp(1px, 0.2vw, 2px) clamp(1px, 0.3vw, 3px) rgba(0,0,0,0.3);
 
             /* 增强描边 */
-            -webkit-text-stroke: clamp(1px, 0.2vw, 2px) #01FAC0;
+            -webkit-text-stroke: 4px #01FAC0;
             paint-order: stroke fill;
 
             /* 动态效果 */
@@ -88,8 +88,8 @@
         /* 移动端特殊适配 */
         @media (max-width: 768px) {
             .title {
-                font-size: clamp(32px, 6vw, 48px); /* 手机端字体更大 */
-                bottom: 20%; /* 调整位置 */
+                font-size: clamp(32px, 6vw, 45px); 
+                bottom: 36%; /* 调整位置 */
                 text-shadow: 
                     0 0 clamp(4px, 1vw, 8px) #53AD78,
                     clamp(1px, 0.3vw, 2px) clamp(1px, 0.4vw, 3px) rgba(0,0,0,0.3);
@@ -100,19 +100,21 @@
         /* 平板横屏适配 */
         @media (min-width: 769px) and (max-width: 1024px) {
             .title {
-                font-size: clamp(32px, 4vw, 40px);
+                font-size: clamp(32px, 4vw, 38px);
                 bottom: 25%;
+                -webkit-text-stroke: clamp(2px, 0.8vw, 4px) #01FAC0;
             }
         }
 
         /* PC大屏优化 */
         @media (min-width: 1600px) {
             .title {
-                font-size: 48px;
-                -webkit-text-stroke: 2px #01FAC0;
+                font-size: 42px;
+                bottom: 36%; /* 调整位置 */
+                -webkit-text-stroke: 4px #01FAC0;
             }
         }
-
+        
         /* 动画 */
         .title-fade-in {
             animation: fade-in 6s forwards;
@@ -138,7 +140,7 @@
             top: 38%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 230px;
+            width: 228px;
             height: auto;
             animation: rotate 5s linear infinite;
         }
