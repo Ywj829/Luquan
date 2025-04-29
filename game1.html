@@ -19,19 +19,21 @@
 
         /*边框*/
         #game-wrapper {
-            width: 80%;
-            max-width: 340px;
-            height: 80vh;
-            max-height: 800px;
+            width: 90vmin;
+            height: 135vmin;
+            max-width: 37vmin;
+            max-height: 80vmin;
+            min-width: 250px;
+            min-height: 375px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-size: cover; /* 背景填充 */
-            background-position: center; /* 背景居中 */
+            background-size: cover;
+            background-position: center;
             border: 5px solid rgba(63, 176, 237, 1);
             border-radius: 15px;
-            box-shadow: none; /* 去除阴影效果 */
             position: relative;
+            aspect-ratio: 2/3;
         }
 
         /* 游戏内容容器 */
