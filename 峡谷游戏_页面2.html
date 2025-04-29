@@ -64,7 +64,7 @@
             font-family: 'ZihunXinQuHei', sans-serif;
             
             /* 字体增强 */
-            font-size: 40px;
+            font-size: 5vw; /* 改用视窗单位 */
             font-weight: 70 !important; /* 强制加粗 */
             font-style: normal;
             line-height: 0.96; /* 建议使用无单位值 */
@@ -76,13 +76,33 @@
                 2px 3px 2px rgba(0,0,0,0.3); /* 立体阴影 */
             
             /* 增强描边 */
-            -webkit-text-stroke: 5px #01FAC0; /* 合并写法 */
+            -webkit-text-stroke: 0.7vw #01FAC0; /* 按比例缩小描边 */
             paint-order: stroke fill; /* 控制绘制顺序 */
             
             /* 动态效果 */
             opacity: 0;
             animation: textGlow 1.5s ease-in-out infinite alternate;
+
+            /* 新增关键样式 */
+            white-space: nowrap; /* 强制不换行 */
+            width: 100%; /* 确保容器宽度足够 */
+            text-align: center; /* 确保居中 */
+            padding: 0 20px; /* 添加安全间距 */
+            box-sizing: border-box;
+
+            /* 响应式调整 */
+            -webkit-text-stroke: 0.7vw #01FAC0; /* 按比例缩小描边 */
         }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 32px; /* 移动端固定字号 */
+                bottom: 28%; /* 调整位置 */
+                -webkit-text-stroke: 3px #01FAC0; /* 固定描边大小 */
+            }
+        }
+
 
         /* 动画 */
         .title-fade-in {
