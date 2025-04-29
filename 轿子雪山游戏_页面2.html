@@ -11,7 +11,7 @@
             font-weight: 400;
             font-display: swap;
             src: url('./fonts/字魂新曲黑.ttf') format('truetype');
-            }
+        }
 
         /* 基础样式 */
         body {
@@ -42,9 +42,7 @@
         .nav-btn {
             position: absolute;
             cursor: pointer;
-            /*background-color: rgba(255,0,0,0.3); /* 调试用红色背景 */
-            /*border: 1px solid red; /* 调试用边框 */
-            -webkit-tap-highlight-color: transparent;/*防止点击有轮廓*/
+            -webkit-tap-highlight-color: transparent;
             outline: none;
             pointer-events: auto;
             transform: translate(-50%, -50%);
@@ -52,61 +50,76 @@
 
         /*探索按钮*/
         .music-btn {
-            width: 4px;
-            height:4px;
+            width: 40px;
+            height: 40px;
         }
 
         .title {
             position: absolute;
-            bottom: 38%;
             left: 50%;
+            bottom: 37%;
             transform: translateX(-50%);
             font-family: 'ZihunXinQuHei', sans-serif;
-            
+            white-space: nowrap;
+            text-align: center;
+            width: 90%;
+            max-width: 1200px;
+            padding: 0 20px;
+            box-sizing: border-box;
+
             /* 字体增强 */
-            font-size: 5vw; /* 改用视窗单位 */
-            font-weight: 70 !important; /* 强制加粗 */
-            font-style: normal;
-            line-height: 0.96; /* 建议使用无单位值 */
-            
+            font-size: clamp(24px, 4vw, 45px); /* 调整字体大小 */
+
             /* 多层文字效果 */
             color: #FFF;
             text-shadow: 
-                0 0 8px rgba(0,169,216,0.5), /* 发光效果 */
-                2px 3px 2px rgba(0,0,0,0.3); /* 立体阴影 */
-            
+                0 0 clamp(0.5px, 0.5vw, 1px) rgba(0,169,216,0.5), /* 调整阴影大小 */
+                clamp(1px, 0.2vw, 2px) clamp(1px, 0.3vw, 3px) rgba(0,0,0,0.3);
+
             /* 增强描边 */
-            -webkit-text-stroke: 0.7vw #9EEAFF; /* 按比例缩小描边 */
-            paint-order: stroke fill; /* 控制绘制顺序 */
-            
+            -webkit-text-stroke: 4px #9EEAFF;
+            paint-order: stroke fill;
+
             /* 动态效果 */
             opacity: 0;
             animation: textGlow 1.5s ease-in-out infinite alternate;
-
-            /* 新增关键样式 */
-            white-space: nowrap; /* 强制不换行 */
-            width: 100%; /* 确保容器宽度足够 */
-            text-align: center; /* 确保居中 */
-            padding: 0 20px; /* 添加安全间距 */
-            box-sizing: border-box;
-
-            /* 响应式调整 */
-            -webkit-text-stroke: 0.7vw #9EEAFF; /* 按比例缩小描边 */
         }
 
-        /* 移动端适配 */
+        /* 移动端特殊适配 */
         @media (max-width: 768px) {
             .title {
-                font-size: 32px; /* 移动端固定字号 */
-                bottom: 28%; /* 调整位置 */
-                -webkit-text-stroke: 3px #01FAC0; /* 固定描边大小 */
+                font-size: clamp(32px, 6vw, 45px); /* 手机端字体更大 */
+                bottom: 36%; /* 调整位置 */
+                text-shadow: 
+                    0 0 clamp(4px, 1vw, 8px) rgba(0,169,216,0.5),
+                    clamp(1px, 0.3vw, 2px) clamp(1px, 0.4vw, 3px) rgba(0,0,0,0.3);
+                -webkit-text-stroke: 4px #9EEAFF;
+            }
+        }
+
+        /* 平板横屏适配 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .title {
+                font-size: clamp(32px, 4vw, 38px);
+                bottom: 25%;
+                -webkit-text-stroke: clamp(2px, 0.8vw, 4px) #9EEAFF;
+            }
+        }
+
+        /* PC大屏优化 */
+        @media (min-width: 1600px) {
+            .title {
+                font-size: 42px;
+                bottom: 36%; /* 调整位置 */
+                -webkit-text-stroke: 4px #9EEAFF;
             }
         }
 
         /* 动画 */
         .title-fade-in {
-            animation: fade-in 6s forwards; /* 6秒内完成动画，并且保持结束状态 */
+            animation: fade-in 6s forwards;
         }
+
         @keyframes fade-in {
             from {
                 opacity: 0;
@@ -127,7 +140,7 @@
             top: 38%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 240px; /* 根据需要调整大小 */
+            width: 228px;
             height: auto;
             animation: rotate 5s linear infinite;
         }
@@ -210,8 +223,8 @@
                     if (btn) {
                         btn.style.left = `${offsetX + pos.x * scale}px`;
                         btn.style.top = `${pos.y * scale}px`;
-                        btn.style.width = `${1200 * scale}px`;
-                        btn.style.height = `${1200 * scale}px`;
+                        btn.style.width = `${1250 * scale}px`;
+                        btn.style.height = `${1250 * scale}px`;
                     }
                 });
             };
