@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地标3</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-image: url("地标3.png");
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: contain;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 组件层 - 放在背景之上 */
+        .component-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* 组件容器样式 */
+        .component-container {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* 组件图片样式 */
+        .component-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        /* 添加平滑过渡 */
+        .component-container {
+            transition: all 0.5s ease-out; /* 所有属性变化都有0.5秒缓动效果 */
+        }
+
+        /* 组件上的数字样式 */
+        .component-number {
+            position: absolute;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        /* 组件上的按钮基础样式 */
+        .component-btn {
+            position: absolute;
+            width: 8.5%;
+            height: 8.5%;
+            border: none;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            pointer-events: auto;
+            border-radius: 50%; /* 圆形按钮 */
+        }
+
+        /* 放大按钮样式 */
+        .zoom-in-btn {
+            background-color: transparent;
+            left: 90.8%;
+            top: 11%;
+        }
+
+        /* 新增缩小按钮样式 */
+        .zoom-out-btn {
+            background-color: transparent;
+            left: 71.5%; /* 放在放大按钮左侧 */
+            top: 11%;
+        }
+
+        /* 导航按钮容器 */
+        .nav-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* 基础按钮样式 */
+        .nav-btn {
+            position: absolute;
+            cursor: pointer;
+            pointer-events: auto;
+            transform: translate(-50%, -50%);
+        }
+
+        /*探索按钮*/
+        .exploration-btn {
+            width: 40px;
+            height: 40px;
+        }
+
+        /*地标按钮 */
+        .location-btn {
+            width: 40px;
+            height: 40px;
+        }
+
+        /*禄圈按钮*/
+        .circle-btn {
+            width: 40px;
+            height: 40px;
+        }
+
+        /*我的按钮*/
+        .myself-btn {
+            width: 40px;
+            height: 40px;
+        }
+        
+        /*返回主页按钮*/
+        .home-btn{
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 组件层 -->
+    <div class="component-layer" id="component-layer"></div>
+
+    <!-- 导航按钮 -->
+    <div class="nav-container">
+        <div class="nav-btn exploration-btn" onclick="navigate('exploration')"></div>
+        <div class="nav-btn location-btn" onclick="navigate('location')"></div>
+        <div class="nav-btn circle-btn" onclick="navigate('circle')"></div>
+        <div class="nav-btn myself-btn" onclick="navigate('myself')"></div>
+        <div class="nav-btn home-btn" onclick="navigate('location')"></div>
+    </div>
+
+    <script>
+        // 导航功能
+        function navigate(page) {
+            const pages = {
+                'exploration': '探索.html',
+                'location': '地标.html',
+                'circle': '禄圈.html',
+                'myself': '我的.html',
+            };
+            if (pages[page]) window.location.href = pages[page];
+        }
+
+        // 组件状态
+        const maxScale = 1.2;
+        const minScale = 1.0; // 减小最小缩放比例
+        const scaleStep = 0.1;
+        let component1Scale = 1.0;
+        let number = '1.0'; // 初始状态
+        let component2Offset = 0; // 组件2的垂直偏移量（0-100%）
+
+        // 滑动动画参数
+        const slideDistance = 1.0; // 滑动一个完整屏幕高度
+        let isAnimating = false;
+        let animationStartTime = 0;
+        const animationDuration = 800; // 毫秒
+        
+        // 动态调整组件和按钮位置
+        function adjustLayout() {
+            const img = new Image();
+            img.src = "地标3.png";
+            
+            img.onload = function() {
+                const imgWidth = img.width;
+                const imgHeight = img.height;
+                
+                // 获取当前图片显示尺寸
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const imgRatio = imgWidth / imgHeight;
+                const windowRatio = windowWidth / windowHeight;
+                
+                let displayWidth, displayHeight, offsetX;
+                
+                if (windowRatio > imgRatio) {
+                    displayHeight = windowHeight;
+                    displayWidth = displayHeight * imgRatio;
+                    offsetX = (windowWidth - displayWidth) / 2;
+                } else {
+                    displayWidth = windowWidth;
+                    displayHeight = displayWidth / imgRatio;
+                    offsetX = 0;
+                }
+                
+                const scale = displayWidth / imgWidth;
+                const componentLayer = document.getElementById('component-layer');
+                componentLayer.innerHTML = '';
+                
+                // 组件1容器
+                const componentContainer1 = document.createElement('div');
+                componentContainer1.className = 'component-container';
+                componentContainer1.style.left = `${offsetX + imgWidth * 0.510 * scale}px`;
+                
+                componentContainer1.style.top = `${imgHeight * 0.419 * scale}px`;
+                componentContainer1.style.width = `${imgWidth * scale * 0.97 * component1Scale}px`;
+                componentContainer1.id = 'component-1';
+                
+                const componentImg1 = document.createElement('img');
+                componentImg1.src = '组件3.png';
+                componentImg1.className = 'component-img';
+                componentContainer1.appendChild(componentImg1);
+                componentLayer.appendChild(componentContainer1);
+                
+                // 组件2容器
+                const componentContainer2 = document.createElement('div');
+                componentContainer2.className = 'component-container';
+                componentContainer2.style.left = `${offsetX + imgWidth * 0.5 * scale}px`;
+                // 根据组件1的缩放比例调整组件2的垂直位置
+                const component2Top = 0.69 + (component1Scale - 1.0) * 0.105; // 组件1放大时组件2下移
+                componentContainer2.style.top = `${imgHeight * component2Top * scale}px`;
+                componentContainer2.style.width = `${imgWidth * 0.92 * scale}px`;
+                
+                const componentImg2 = document.createElement('img');
+                componentImg2.src = '组件31.png';
+                componentImg2.className = 'component-img';
+                componentContainer2.appendChild(componentImg2);
+                
+                // 数字
+                const componentNumber = document.createElement('div');
+                componentNumber.className = 'component-number';
+                
+                componentNumber.textContent = number;
+                componentNumber.style.left = '81%';
+                componentNumber.style.top = '11%';
+                componentNumber.style.fontSize = `${24 * 1.7 * scale}px`;
+                componentContainer2.appendChild(componentNumber);
+                
+                // 放大按钮
+                const zoomInButton = document.createElement('button');
+                zoomInButton.className = 'component-btn zoom-in-btn';
+                zoomInButton.title = '放大上方组件';
+                zoomInButton.onclick = function(e) {
+                    e.stopPropagation();
+                    zoomComponent1(scaleStep); // 放大
+                };
+                
+                componentContainer2.appendChild(zoomInButton);
+                
+                // 新增缩小按钮
+                const zoomOutButton = document.createElement('button');
+                zoomOutButton.className = 'component-btn zoom-out-btn';
+                zoomOutButton.title = '缩小上方组件';
+                zoomOutButton.onclick = function(e) {
+                    e.stopPropagation();
+                    zoomComponent1(-scaleStep); // 缩小
+                };
+            
+                componentContainer2.appendChild(zoomOutButton);
+                
+                componentLayer.appendChild(componentContainer2);
+                
+                // 导航按钮位置调整
+                const buttonPositions = [
+                    { class: 'exploration-btn', x: imgWidth*0.154, y: imgHeight*0.955 },
+                    { class: 'location-btn', x: imgWidth*0.387, y: imgHeight*0.955 },
+                    { class: 'circle-btn', x: imgWidth*0.632, y: imgHeight*0.955 },
+                    { class: 'myself-btn', x: imgWidth*0.862, y: imgHeight*0.955 },
+                    { class: 'home-btn', x: imgWidth*0.079, y: imgHeight*0.069 }
+                ];
+                
+                buttonPositions.forEach(pos => {
+                    const btn = document.querySelector(`.${pos.class}`);
+                    if (btn) {
+                        btn.style.left = `${offsetX + pos.x * scale}px`;
+                        btn.style.top = `${pos.y * scale}px`;
+                        
+                        if(pos.class==='home-btn'){
+                            btn.style.width = `${400 * scale}px`;
+                            btn.style.height = `${400 * scale}px`;
+                        }
+                        else{
+                            btn.style.width = `${100 * scale}px`;
+                            btn.style.height = `${100 * scale}px`;
+                        }
+                    }
+                });
+            };
+        }
+
+        // 动画循环
+        let animationId = null;
+        function animate() {
+            // 计算差值实现缓动效果
+            currentScale += (targetScale - currentScale) * 0.2;
+            
+            // 当接近目标值时直接设为目标值
+            if (Math.abs(targetScale - currentScale) < 0.01) {
+                currentScale = targetScale;
+            } else {
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            // 更新数字显示（只在接近目标值时更新）
+            if (Math.abs(targetScale - currentScale) < 0.05) {
+                if (Math.abs(currentScale - 1.0) < 0.05) {
+                    number = '1.0';
+                } else if (Math.abs(currentScale - 1.1) < 0.05) {
+                    number = '2.0';
+                } else if (Math.abs(currentScale - 1.2) < 0.05) {
+                    number = '3.0';
+                }
+            }
+            
+            adjustLayout();
+        }
+
+        // 缩放组件1
+        function zoomComponent1(step) {
+            component1Scale += step;
+            
+            // 限制缩放范围
+            if (component1Scale > maxScale) {
+                component1Scale = maxScale;
+            } else if (component1Scale < minScale) {
+                component1Scale = minScale;
+            }
+
+            // 更新数字状态
+            if (Math.abs(component1Scale - 1.0) < 0.05) {
+                number = '1.0';
+            } else if (Math.abs(component1Scale - 1.1) < 0.05) {
+                number = '2.0';
+            } else if (Math.abs(component1Scale - 1.2) < 0.05) {
+                number = '3.0';
+            }
+            
+            adjustLayout();
+        }
+
+        // 防抖处理
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(adjustLayout, 100);
+        });
+
+        window.addEventListener('load', adjustLayout);
+    </script>
+</body>
+</html>
